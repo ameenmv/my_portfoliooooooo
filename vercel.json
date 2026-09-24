@@ -1,0 +1,7 @@
+{
+  "buildCommand": "bun run build",
+  "outputDirectory": ".output",
+  "installCommand": "bun install",
+  "framework": "nuxt",
+  "regions": ["fra1"]
+}

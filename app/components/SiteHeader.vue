@@ -69,7 +69,7 @@ function toggleLocale() {
 
     <!-- Nav pill -->
     <nav
-      class="pointer-events-auto flex items-center gap-[clamp(12px,2.5vw,36px)] h-[clamp(48px,4.5vw,64px)] px-[clamp(12px,2.2vw,32px)] rounded-full transition-colors duration-350"
+      class="pointer-events-auto flex items-center gap-[clamp(12px,2.5vw,36px)] h-[clamp(48px,4.5vw,64px)] px-[clamp(12px,2.2vw,32px)] rounded-full transition-colors duration-350 max-md:hidden"
       :style="{
         border: '1px solid color-mix(in srgb, var(--header-capsule-color, #fff) 10%, transparent)',
         backgroundColor: 'color-mix(in srgb, var(--header-capsule-color, #fff) 12%, transparent)',
@@ -77,29 +77,35 @@ function toggleLocale() {
         WebkitBackdropFilter: 'blur(20px)',
       }"
     >
-      <NuxtLink
-        to="/#projects"
-        class="font-body text-[clamp(14px,1vw,17px)] font-medium leading-none text-inherit no-underline relative group"
-      >
-        {{ t('nav.projects') }}
-        <span class="absolute bottom-[-0.25em] inset-x-0 h-[1px] bg-current scale-x-0 origin-left transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
-      </NuxtLink>
+      <MagneticButton :strength="8">
+        <NuxtLink
+          to="/#projects"
+          class="font-body text-[clamp(14px,1vw,17px)] font-medium leading-none text-inherit no-underline relative group"
+        >
+          {{ t('nav.projects') }}
+          <span class="absolute bottom-[-0.25em] inset-x-0 h-[1px] bg-current scale-x-0 origin-left transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
+        </NuxtLink>
+      </MagneticButton>
 
-      <NuxtLink
-        to="/playground"
-        class="font-body text-[clamp(14px,1vw,17px)] font-medium leading-none text-inherit no-underline relative group"
-      >
-        {{ t('nav.playground') }}
-        <span class="absolute bottom-[-0.25em] inset-x-0 h-[1px] bg-current scale-x-0 origin-left transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
-      </NuxtLink>
+      <MagneticButton :strength="8">
+        <NuxtLink
+          to="/playground"
+          class="font-body text-[clamp(14px,1vw,17px)] font-medium leading-none text-inherit no-underline relative group"
+        >
+          {{ t('nav.playground') }}
+          <span class="absolute bottom-[-0.25em] inset-x-0 h-[1px] bg-current scale-x-0 origin-left transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
+        </NuxtLink>
+      </MagneticButton>
 
-      <NuxtLink
-        to="/contact"
-        class="font-body text-[clamp(14px,1vw,17px)] font-medium leading-none text-inherit no-underline relative group"
-      >
-        {{ t('nav.contact') }}
+      <MagneticButton :strength="8">
+        <NuxtLink
+          to="/contact"
+          class="font-body text-[clamp(14px,1vw,17px)] font-medium leading-none text-inherit no-underline relative group"
+        >
+          {{ t('nav.contact') }}
         <span class="absolute bottom-[-0.25em] inset-x-0 h-[1px] bg-current scale-x-0 origin-left transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
       </NuxtLink>
+      </MagneticButton>
 
       <!-- Separator -->
       <span class="w-[1px] h-4 bg-current/20" aria-hidden="true" />
