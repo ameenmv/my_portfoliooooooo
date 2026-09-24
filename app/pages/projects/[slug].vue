@@ -1,112 +1,192 @@
 <script setup lang="ts">
-const route = useRoute()
-const slug = computed(() => route.params.slug as string)
+/**
+ * Project page — horizontal scroll case study.
+ * Mirrors guillaumezhu.com: pinned horizontal track with panels.
+ */
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-const projectMap: Record<string, { title: string; theme: 'cream' | 'dark' }> = {
-  saaf: { title: 'SAAF', theme: 'cream' },
-  'haze-clue': { title: 'Haze Clue', theme: 'dark' },
-  sa5er: { title: 'Sa5er CLI', theme: 'dark' },
-  athar: { title: 'Athar', theme: 'cream' },
-  nabeeh: { title: 'Nabeeh', theme: 'cream' },
+const route = useRoute()
+const { locale } = useI18n()
+const slug = computed(() => route.params.slug as string)
+const trackRef = ref<HTMLElement>()
+const sectionRef = ref<HTMLElement>()
+let ctx: gsap.Context | null = null
+
+interface ProjectData {
+  title: string
+  theme: 'cream' | 'dark'
+  tagline: string
+  stack: string[]
+  description: string
+  facts: string[]
 }
 
-const project = computed(() => projectMap[slug.value] || { title: slug.value, theme: 'cream' })
+const projectMap: Record<string, ProjectData> = {
+  saaf: {
+    title: 'SAAF',
+    theme: 'cream',
+    tagline: 'Enterprise Fintech Ecosystem',
+    stack: ['Vue 3', 'Nuxt.js', 'Pinia', 'Pusher', 'Laravel Echo', 'Chart.js', 'SSR'],
+    description: 'A comprehensive fintech platform with real-time WebSocket layer, two-tier RBAC system, and near-perfect Core Web Vitals.',
+    facts: ['840+ unique views', '1,180+ reusable components', '33 persistent Pinia stores', 'Real-time via Pusher/Echo'],
+  },
+  'haze-clue': {
+    title: 'Haze Clue',
+    theme: 'dark',
+    tagline: 'Real-Time BCI Platform',
+    stack: ['Nuxt 4', 'NestJS', 'MongoDB', 'Socket.IO', 'Chart.js', 'i18n'],
+    description: 'Full-stack cognitive-monitoring platform with live EEG data streams from BCI devices. Sub-second latency real-time data broadcasting.',
+    facts: ['Live EEG streams', 'JWT/OTP auth', 'Bilingual RTL/LTR', 'Sub-second latency'],
+  },
+  sa5er: {
+    title: 'Sa5er CLI',
+    theme: 'dark',
+    tagline: 'Sarcastic Egyptian Senior Dev',
+    stack: ['Node.js', 'Terminal APIs', 'Caching', 'Gemini/Grok'],
+    description: 'AI-powered CLI that intercepts terminal errors with context-aware fixes. 3-tier error resolution architecture with Egyptian personality.',
+    facts: ['Published on npm', 'AI-powered', '3-tier error resolution', 'Local caching'],
+  },
+  athar: {
+    title: 'Athar',
+    theme: 'cream',
+    tagline: 'Local-First MCP Server',
+    stack: ['Node.js', 'Nuxt 4', 'SQLite', 'MCP Protocol'],
+    description: 'MCP server capturing AI-generated bug resolutions into a developer knowledge base. SM-2 spaced repetition algorithm.',
+    facts: ['Published on npm', 'Open source', 'SM-2 algorithm', 'Local SQLite'],
+  },
+  nabeeh: {
+    title: 'Nabeeh',
+    theme: 'cream',
+    tagline: 'Real-Time Multiplayer Platform',
+    stack: ['Nuxt.js', 'Socket.IO', 'Nuxt UI', 'Tailwind CSS'],
+    description: 'Real-time multiplayer game logic with live score synchronization across concurrent sessions.',
+    facts: ['Real-time multiplayer', 'Live score sync', 'Socket.IO', 'Concurrent sessions'],
+  },
+}
+
+const project = computed(() => projectMap[slug.value] || {
+  title: slug.value,
+  theme: 'cream' as const,
+  tagline: '',
+  stack: [],
+  description: '',
+  facts: [],
+})
 
 useHead({
   title: () => `${project.value.title} — Ameen Mohamed`,
 })
+
+onMounted(() => {
+  if (!sectionRef.value || !trackRef.value) return
+  gsap.registerPlugin(ScrollTrigger)
+
+  ctx = gsap.context(() => {
+    const dir = locale.value === 'ar' ? 1 : -1
+    const panels = trackRef.value!.querySelectorAll('.project-panel')
+    const totalWidth = (panels.length - 1) * window.innerWidth
+
+    gsap.to(trackRef.value!, {
+      x: () => dir * totalWidth,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: sectionRef.value!,
+        start: 'top top',
+        end: () => `+=${totalWidth}`,
+        scrub: 1,
+        pin: true,
+        anticipatePin: 1,
+      },
+    })
+  }, sectionRef.value)
+})
+
+onUnmounted(() => {
+  ctx?.revert()
+})
 </script>
 
 <template>
-  <main class="project-page" :data-theme="project.theme">
+  <main
+    class="min-h-screen"
+    :class="project.theme === 'dark' ? 'bg-dark text-cream' : 'bg-cream text-dark'"
+  >
+    <!-- Back arrow -->
     <NuxtLink
       to="/#projects"
-      class="project-back"
+      class="fixed top-1/2 start-[clamp(16px,3vw,32px)] -translate-y-1/2 z-[100] opacity-60 hover:opacity-100 transition-opacity"
+      :class="project.theme === 'dark' ? 'text-cream' : 'text-dark'"
       aria-label="Back to project list"
     >
-      <svg class="project-back__icon" width="62" height="15" viewBox="0 0 62 15" fill="none" aria-hidden="true">
-        <path class="project-back__shaft" d="M60.3018 7.37256L2.30176 7.37256" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-        <path class="project-back__arrowhead" d="M7.26025 13.7279L1.07307 7.54074C0.975439 7.44311 0.975439 7.28482 1.07307 7.18718L7.26025 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      <svg width="62" height="15" viewBox="0 0 62 15" fill="none" aria-hidden="true" :class="locale === 'ar' ? 'scale-x-[-1]' : ''">
+        <path d="M60.3018 7.37256L2.30176 7.37256" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        <path d="M7.26025 13.7279L1.07307 7.54074C0.975439 7.44311 0.975439 7.28482 1.07307 7.18718L7.26025 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
       </svg>
     </NuxtLink>
 
-    <section class="project-page__placeholder" :class="project.theme === 'dark' ? 'project-page__placeholder--dark' : ''">
-      <span class="placeholder__label">PROJECT</span>
-      <h1 class="placeholder__title">{{ project.title }}</h1>
-      <span class="placeholder__sublabel">Horizontal scroll case study — Coming in Phase 3</span>
+    <!-- Horizontal scroll track -->
+    <section ref="sectionRef" class="overflow-hidden">
+      <div ref="trackRef" class="flex h-screen will-change-transform">
+        <!-- Panel 1: Title -->
+        <div class="project-panel flex-none w-screen h-screen flex flex-col items-center justify-center gap-6 px-[5vw]">
+          <span class="font-body text-xs font-bold tracking-[0.15em] uppercase opacity-50">Project</span>
+          <h1 class="font-display text-[clamp(64px,15vw,160px)] font-bold tracking-display italic leading-[0.85]">
+            {{ project.title }}
+          </h1>
+          <p class="font-display text-[clamp(18px,2.5vw,32px)] font-light opacity-70">
+            {{ project.tagline }}
+          </p>
+        </div>
+
+        <!-- Panel 2: Context -->
+        <div class="project-panel flex-none w-screen h-screen flex flex-col items-center justify-center gap-8 px-[10vw]">
+          <p class="font-display text-[clamp(24px,3vw,48px)] font-medium leading-[1.2] tracking-display text-center max-w-[800px]">
+            {{ project.description }}
+          </p>
+
+          <!-- Stack pills -->
+          <div class="flex flex-wrap justify-center gap-3">
+            <span
+              v-for="tech in project.stack"
+              :key="tech"
+              class="font-body text-[clamp(12px,1vw,16px)] font-medium px-4 py-2.5 border rounded-full"
+              :class="project.theme === 'dark' ? 'border-cream/20' : 'border-dark/20'"
+            >
+              {{ tech }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Panel 3: Key facts -->
+        <div class="project-panel flex-none w-screen h-screen flex flex-col items-center justify-center gap-8 px-[10vw]">
+          <h2 class="font-body text-xs font-bold tracking-[0.15em] uppercase opacity-50">Key facts</h2>
+          <div class="grid grid-cols-2 gap-6 max-w-[600px]">
+            <div
+              v-for="fact in project.facts"
+              :key="fact"
+              class="font-display text-[clamp(20px,2.5vw,36px)] font-bold tracking-display text-center"
+            >
+              {{ fact }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 4: More projects -->
+        <div class="project-panel flex-none w-screen h-screen flex flex-col items-center justify-center gap-8 px-[10vw]">
+          <span class="font-body text-xs font-bold tracking-[0.15em] uppercase opacity-50">Other projects</span>
+          <div class="flex flex-col items-center gap-4">
+            <NuxtLink
+              v-for="p in Object.entries(projectMap).filter(([k]) => k !== slug)"
+              :key="p[0]"
+              :to="`/projects/${p[0]}`"
+              class="font-display text-[clamp(32px,5vw,64px)] font-medium italic tracking-display opacity-60 hover:opacity-100 transition-opacity"
+            >
+              {{ p[1].title }}
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 </template>
-
-<style scoped>
-.project-page {
-  min-height: 100vh;
-}
-
-.project-page[data-theme="cream"] {
-  background-color: var(--color-cream);
-  color: var(--color-dark);
-}
-
-.project-page[data-theme="dark"] {
-  background-color: var(--color-dark);
-  color: var(--color-cream);
-}
-
-.project-back {
-  position: fixed;
-  top: 50%;
-  inset-inline-start: clamp(16px, 3vw, 32px);
-  transform: translateY(-50%);
-  z-index: 100;
-  color: inherit;
-  opacity: 0.6;
-  transition: opacity 0.25s;
-}
-
-html[dir="rtl"] .project-back {
-  transform: translateY(-50%) scaleX(-1);
-}
-
-.project-back:hover {
-  opacity: 1;
-}
-
-.project-page__placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  gap: 16px;
-  color: var(--color-dark);
-}
-
-.project-page__placeholder--dark {
-  color: var(--color-cream);
-}
-
-.placeholder__label {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  opacity: 0.5;
-}
-
-.placeholder__title {
-  font-family: var(--font-display);
-  font-size: clamp(48px, 10vw, 120px);
-  font-weight: 700;
-  letter-spacing: var(--letter-spacing-display);
-  font-style: italic;
-}
-
-.placeholder__sublabel {
-  font-family: var(--font-body);
-  font-size: clamp(14px, 1.2vw, 18px);
-  font-weight: 400;
-  opacity: 0.5;
-}
-</style>
