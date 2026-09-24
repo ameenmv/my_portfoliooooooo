@@ -14,11 +14,15 @@ onUnmounted(() => {
 
 <template>
   <div>
+    <ClientOnly>
+      <SiteLoader />
+    </ClientOnly>
     <SiteHeader />
     <ScrollIndicator />
     <PageTransition />
     <ClientOnly>
       <DevFpsOverlay />
+      <CustomCursor />
     </ClientOnly>
     <NuxtPage />
   </div>
