@@ -1,64 +1,78 @@
 <script setup lang="ts">
 /**
- * ManifestoSection — Single massive horizontal-scrolling sentence.
- * Mirrors guillaumezhu.com: text scrolls horizontally with padding 101vw on each side.
- * Each letter individually wrapped for stagger animation.
- * Uses GSAP ScrollTrigger to drive horizontal position.
+ * ManifestoSection — Horizontal-scrolling sentence at 12vw.
+ * Exact replica of guillaumezhu.com:
+ * - Overlaps hero with negative margin (-55vh)
+ * - Cream background, dark text
+ * - Each letter individually animated for stagger opacity
+ * - Horizontal scroll via GSAP ScrollTrigger pin
+ * - Text padded 101vw on each side for clean entry/exit
  */
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 const { t, locale } = useI18n()
 const sectionRef = ref<HTMLElement>()
-const containerRef = ref<HTMLElement>()
-const textRef = ref<HTMLElement>()
+const pinRef = ref<HTMLElement>()
+const trackRef = ref<HTMLElement>()
 let ctx: gsap.Context | null = null
 
 const manifesto = computed(() => t('home.manifesto'))
 
-// Split text into individual letter spans (words for Arabic)
-const letters = computed(() => {
+// Split: letters for Latin, words for Arabic (agy BLOCKER)
+const segments = computed(() => {
   const text = manifesto.value
   if (locale.value === 'ar') {
-    // Arabic: split by WORDS only (never chars — agy BLOCKER fix)
-    return text.split(' ').map((word, i) => ({ char: word + ' ', key: `w-${i}` }))
+    return text.split(' ').map((word, i) => ({
+      content: word,
+      isSpace: false,
+      key: `w-${i}`,
+    })).flatMap((item, i, arr) => {
+      if (i < arr.length - 1) {
+        return [item, { content: '\u00A0', isSpace: true, key: `s-${i}` }]
+      }
+      return [item]
+    })
   }
   return text.split('').map((char, i) => ({
-    char: char === ' ' ? '\u00A0' : char,
+    content: char === ' ' ? '\u00A0' : char,
+    isSpace: char === ' ',
     key: `c-${i}`,
   }))
 })
 
 onMounted(() => {
-  if (!sectionRef.value || !textRef.value || !containerRef.value) return
-
+  if (!sectionRef.value || !pinRef.value || !trackRef.value) return
   gsap.registerPlugin(ScrollTrigger)
 
   ctx = gsap.context(() => {
-    // Horizontal scroll: text moves left as user scrolls down
-    const dir = locale.value === 'ar' ? 1 : -1 // RTL: move right instead
+    const dir = locale.value === 'ar' ? 1 : -1
 
-    gsap.to(textRef.value!, {
-      x: () => dir * (textRef.value!.scrollWidth - window.innerWidth),
+    // Horizontal scroll
+    gsap.to(trackRef.value!, {
+      x: () => dir * (trackRef.value!.scrollWidth - window.innerWidth),
       ease: 'none',
       scrollTrigger: {
         trigger: sectionRef.value!,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 1,
-        pin: containerRef.value!,
+        scrub: 0.8,
+        pin: pinRef.value!,
       },
     })
 
-    // Letter stagger reveal
-    const letterEls = textRef.value!.querySelectorAll('.manifesto-letter')
+    // Letter opacity stagger
+    const letterEls = trackRef.value!.querySelectorAll('.manifesto-char')
     gsap.from(letterEls, {
-      opacity: 0.15,
-      stagger: 0.02,
+      opacity: 0.08,
+      stagger: {
+        each: 0.015,
+        from: locale.value === 'ar' ? 'end' : 'start',
+      },
       scrollTrigger: {
         trigger: sectionRef.value!,
         start: 'top top',
-        end: '50% top',
+        end: '60% top',
         scrub: 1,
       },
     })
@@ -74,25 +88,36 @@ onUnmounted(() => {
   <section
     id="manifesto"
     ref="sectionRef"
-    class="relative w-full h-[400vh] bg-cream overflow-hidden"
-    :class="{ '-mt-[clamp(450px,55svh,500px)]': true }"
+    class="relative w-full bg-cream overflow-hidden -mt-[clamp(350px,45vh,500px)] z-[5]"
+    :style="{ height: 'max(400vh, 2400px)' }"
+    data-theme="cream"
   >
+    <!-- Rounded top edge (like guillaumezhu.com) -->
+    <div class="absolute top-0 inset-x-0 h-[80px] bg-cream rounded-t-block z-[1]" />
+
     <div
-      ref="containerRef"
-      class="flex items-center w-full h-screen relative overflow-hidden origin-top will-change-transform"
+      ref="pinRef"
+      class="flex items-center w-full h-screen relative overflow-hidden"
     >
       <div
-        ref="textRef"
-        class="flex whitespace-nowrap w-max px-[101vw] text-dark cursor-default"
-        :class="locale === 'ar' ? 'text-[clamp(52px,12vw,72px)]' : 'text-[12vw]'"
-        style="font-weight: 700; line-height: 1; letter-spacing: var(--letter-spacing-display, -0.025em);"
+        ref="trackRef"
+        class="flex whitespace-nowrap will-change-transform"
+        :style="{
+          paddingInlineStart: '101vw',
+          paddingInlineEnd: '101vw',
+        }"
       >
         <span
-          v-for="letter in letters"
-          :key="letter.key"
-          class="manifesto-letter inline-block font-display"
+          v-for="seg in segments"
+          :key="seg.key"
+          class="manifesto-char inline-block font-display font-bold leading-none select-none cursor-default will-change-[opacity]"
+          :class="[
+            seg.isSpace ? 'w-[0.3em]' : '',
+            locale === 'ar' ? 'text-[clamp(48px,10vw,80px)]' : 'text-[12vw]',
+          ]"
+          :style="{ letterSpacing: 'var(--letter-spacing-display, -0.025em)', color: 'var(--color-dark, #1f1d1d)' }"
         >
-          {{ letter.char }}
+          {{ seg.content }}
         </span>
       </div>
     </div>

@@ -1,4 +1,12 @@
 <script setup lang="ts">
+/**
+ * ScrollIndicator — 6 vertical bars tracking section progress.
+ * Mirrors guillaumezhu.com: bars change width based on active/neighbor.
+ * Connected to ScrollTrigger to detect which section is in view.
+ */
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
 const { t } = useI18n()
 
 const sections = [
@@ -10,18 +18,53 @@ const sections = [
   { id: 'contact', labelKey: 'home.navigationNext' },
 ]
 
-const activeIndex = useState('scrollIndicatorActive', () => 0)
+const activeIndex = ref(0)
+const sectionProgress = ref(0)
+let triggers: ScrollTrigger[] = []
 
 function getLabel(section: typeof sections[number]) {
   if (section.labelKey) return t(section.labelKey)
   return section.label
 }
+
+onMounted(() => {
+  gsap.registerPlugin(ScrollTrigger)
+
+  // Wait for DOM to settle
+  nextTick(() => {
+    setTimeout(() => {
+      sections.forEach((section, i) => {
+        const el = document.getElementById(section.id)
+        if (!el) return
+
+        const trigger = ScrollTrigger.create({
+          trigger: el,
+          start: 'top 50%',
+          end: 'bottom 50%',
+          onEnter: () => { activeIndex.value = i },
+          onEnterBack: () => { activeIndex.value = i },
+          onUpdate: (self) => {
+            if (i === activeIndex.value) {
+              sectionProgress.value = Math.max(0, Math.min(1, self.progress))
+            }
+          },
+        })
+        triggers.push(trigger)
+      })
+    }, 500)
+  })
+})
+
+onUnmounted(() => {
+  triggers.forEach(t => t.kill())
+  triggers = []
+})
 </script>
 
 <template>
   <nav
     class="fixed bottom-[clamp(24px,4vh,40px)] start-[clamp(20px,2vw,32px)] z-[900] flex flex-col items-start transition-colors duration-400 max-sm:hidden"
-    :style="{ color: 'var(--current-interface-color, var(--color-dark))' }"
+    :style="{ color: 'var(--current-interface-color, var(--color-cream))' }"
     :aria-label="t('home.sectionNavigationLabel')"
   >
     <a
@@ -32,7 +75,6 @@ function getLabel(section: typeof sections[number]) {
       :aria-label="getLabel(section)"
       :aria-current="i === activeIndex ? 'location' : undefined"
     >
-      <!-- Bar -->
       <span
         class="block relative h-[2px] overflow-hidden transition-[width] duration-450 ease-[cubic-bezier(0.22,1,0.36,1)]"
         :class="{
@@ -55,14 +97,12 @@ function getLabel(section: typeof sections[number]) {
         <span
           v-if="i === activeIndex"
           class="absolute inset-0 bg-current origin-left"
-          :style="{ transform: `scaleX(var(--scroll-indicator-progress, 0))` }"
+          :style="{ transform: `scaleX(${sectionProgress})` }"
         />
       </span>
 
       <!-- Hover label -->
-      <span
-        class="absolute top-1/2 start-[calc(100%+8px)] -translate-y-1/2 whitespace-nowrap font-body text-sm font-medium opacity-0 pointer-events-none transition-all duration-250 group-hover:opacity-80"
-      >
+      <span class="absolute top-1/2 start-[calc(100%+8px)] -translate-y-1/2 whitespace-nowrap font-body text-sm font-medium opacity-0 pointer-events-none transition-all duration-250 group-hover:opacity-80">
         {{ getLabel(section) }}
       </span>
     </a>
