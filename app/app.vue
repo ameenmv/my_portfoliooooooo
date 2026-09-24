@@ -1,10 +1,12 @@
 <script setup lang="ts">
 const scroll = useScroll()
 const theme = useTheme()
+const device = useDeviceCapability()
 
 onMounted(() => {
   scroll.init()
   theme.init()
+  device.detect()
 })
 
 onUnmounted(() => {

@@ -1,3 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
-  <text x="4" y="38" font-family="sans-serif" font-weight="900" font-size="36" fill="currentColor">A</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- "AM" monogram — geometric minimalist -->
+  <g fill="currentColor">
+    <!-- A -->
+    <path d="M8 52L22 12h4L40 52h-6l-4-11H18l-4 11H8zm12.5-17h13L27 18l-6.5 17z"/>
+    <!-- M -->
+    <path d="M42 12h5l7.5 22L62 12h5v40h-5V24l-7.5 20h-2L44 24v28h-5V12z" transform="translate(-3, 0) scale(0.85)" />
+  </g>
 </svg>

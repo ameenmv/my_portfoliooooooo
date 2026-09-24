@@ -1,69 +1,83 @@
 <script setup lang="ts">
 /**
- * PageTransition — cross-page transition overlay.
- * Mirrors guillaumezhu.com's curved-edge slide transition.
- * Uses sessionStorage for cross-page state coordination.
+ * PageTransition — Animated cross-page transition.
+ * Exact replica of guillaumezhu.com:
+ * - Curved div slides in from right
+ * - 140vw × 120vh with left-edge border-radius
+ * - Coordinated via sessionStorage between pages
+ * - GSAP drives the slide in/out animation
  */
-const isVisible = ref(false)
+import { gsap } from 'gsap'
+
+const overlayRef = ref<HTMLElement>()
+const isActive = ref(false)
 const variant = ref<'cream' | 'dark'>('cream')
 
-onMounted(() => {
-  const pending = sessionStorage.getItem('pageTransitionPending')
-  if (pending === 'true') {
-    const color = sessionStorage.getItem('pageTransitionColor')
-    variant.value = color === 'dark' ? 'dark' : 'cream'
-    isVisible.value = true
-    sessionStorage.removeItem('pageTransitionPending')
+const router = useRouter()
 
-    // Animate out after mount
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        isVisible.value = false
-      }, 600)
-    })
+// Listen for route changes — animate OUT current page, then IN new page
+router.beforeEach((_to, _from, next) => {
+  if (!overlayRef.value || !import.meta.client) {
+    next()
+    return
   }
+
+  const destTheme = sessionStorage.getItem('pageTransitionColor') || 'cream'
+  variant.value = destTheme as 'cream' | 'dark'
+  isActive.value = true
+
+  // Slide overlay in from right
+  gsap.fromTo(overlayRef.value, {
+    xPercent: 100,
+  }, {
+    xPercent: 0,
+    duration: 0.8,
+    ease: 'power3.inOut',
+    onComplete: () => {
+      next()
+      // After navigation, slide overlay out to left
+      nextTick(() => {
+        window.scrollTo(0, 0)
+        gsap.to(overlayRef.value!, {
+          xPercent: -100,
+          duration: 0.7,
+          ease: 'power3.inOut',
+          delay: 0.15,
+          onComplete: () => {
+            isActive.value = false
+            gsap.set(overlayRef.value!, { xPercent: 100 })
+          },
+        })
+      })
+    },
+  })
+
+  return false // Prevent default navigation until animation completes
 })
 
-function triggerTransition(color: 'cream' | 'dark' = 'cream') {
-  sessionStorage.setItem('pageTransitionPending', 'true')
+function setTransitionColor(color: 'cream' | 'dark') {
   sessionStorage.setItem('pageTransitionColor', color)
 }
 
-defineExpose({ triggerTransition })
+defineExpose({ setTransitionColor })
 </script>
 
 <template>
   <div
-    v-if="isVisible"
-    class="page-transition"
-    :class="`page-transition--${variant}`"
+    ref="overlayRef"
+    class="fixed inset-0 z-[9999] pointer-events-none will-change-transform"
+    :class="isActive ? 'pointer-events-auto' : ''"
+    style="transform: translateX(100%);"
     aria-hidden="true"
-  />
+  >
+    <div
+      class="absolute w-[140vw] h-[120vh] -top-[10vh]"
+      :class="variant === 'dark' ? 'bg-dark' : 'bg-cream'"
+      :style="{
+        borderTopLeftRadius: 'min(60vh, 42vw) 60vh',
+        borderBottomLeftRadius: 'min(60vh, 42vw) 60vh',
+        insetInlineEnd: '-20vw',
+      }"
+    />
+  </div>
 </template>
-
-<style scoped>
-.page-transition {
-  --page-transition-radius-x: min(60vh, 42vw);
-  --page-transition-radius-y: 60vh;
-  z-index: 9999;
-  background-color: var(--color-cream);
-  border-top-left-radius: var(--page-transition-radius-x) var(--page-transition-radius-y);
-  border-bottom-left-radius: var(--page-transition-radius-x) var(--page-transition-radius-y);
-  pointer-events: none;
-  will-change: transform, border-radius;
-  width: 140vw;
-  height: 120vh;
-  display: block;
-  position: fixed;
-  top: -10vh;
-  inset-inline-start: -20vw;
-}
-
-.page-transition--cream {
-  background-color: var(--color-cream);
-}
-
-.page-transition--dark {
-  background-color: var(--color-dark);
-}
-</style>
