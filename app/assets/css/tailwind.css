@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Lenis smooth scroll */
+@layer base {
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow-y: hidden;
+  }
+
+  body {
+    @apply bg-cream text-dark font-display antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    @apply bg-accent-orange text-cream;
+  }
+
+  /* Interface color switching via data attributes */
+  body[data-interface-color="cream"] {
+    --current-interface-color: theme('colors.cream');
+    --header-capsule-color: #646464;
+  }
+
+  body[data-interface-color="dark"] {
+    --current-interface-color: theme('colors.dark');
+    --header-capsule-color: #fff;
+  }
+
+  /* Arabic: no tight tracking */
+  html[dir="rtl"] {
+    --letter-spacing-display: 0em;
+  }
+}
+
+/* Reusable component patterns from guillaumezhu.com */
+@layer components {
+  .text-link {
+    @apply inline-block relative w-fit text-inherit no-underline;
+  }
+
+  .text-link::after {
+    content: '';
+    @apply absolute w-full bg-current transition-transform duration-300;
+    height: 1px;
+    bottom: -0.2em;
+    inset-inline-start: 0;
+    transform: scaleX(0);
+    transform-origin: 0;
+  }
+
+  .text-link:hover::after,
+  .text-link:focus-visible::after {
+    transform: scaleX(1);
+  }
+}

@@ -1,0 +1,36 @@
+/* CSS Custom Properties — extracted from guillaumezhu.com + Arabic companions */
+:root {
+  /* Colors */
+  --color-cream: #f5e7df;
+  --color-dark: #1f1d1d;
+  --color-accent-orange: #ff6b4a;
+  --color-accent-gold: #f6c177;
+  --color-accent-purple: #9b7cff;
+
+  /* Interface color — switches per section via ScrollTrigger */
+  --current-interface-color: var(--color-cream);
+  --header-capsule-color: #646464;
+
+  /* Layout */
+  --border-radius-block: 40px;
+  --border-radius-card: 15px;
+  --padding-min: 1rem;
+
+  /* Typography — Latin + Arabic companion fallback chain */
+  --letter-spacing-display: -0.025em;
+  --font-display: 'CabinetGrotesk', 'Alexandria', Arial, Helvetica, sans-serif;
+  --font-body: 'Satoshi', 'IBMPlexSansArabic', Arial, Helvetica, sans-serif;
+
+  /* Hero */
+  --hero-frame-inset: clamp(8px, calc(2.5vw - 8px), 16px);
+
+  /* Scroll indicator */
+  --scroll-indicator-short: 12px;
+  --scroll-indicator-neighbor: 28px;
+  --scroll-indicator-active: 48px;
+}
+
+/* Arabic-specific: tighten letter-spacing for Arabic text */
+html[dir="rtl"] {
+  --letter-spacing-display: 0em;
+}
