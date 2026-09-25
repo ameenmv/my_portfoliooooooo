@@ -88,8 +88,7 @@ onUnmounted(() => {
   <section
     id="manifesto"
     ref="sectionRef"
-    class="relative w-full bg-cream overflow-hidden z-[2]"
-    style="margin-top: clamp(-500px, -55svh, -450px);"
+    class="relative w-full bg-cream overflow-hidden"
     :style="{ height: 'max(400vh, 2400px)' }"
     data-theme="cream"
   >
