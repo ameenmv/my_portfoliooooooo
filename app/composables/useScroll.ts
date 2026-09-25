@@ -46,6 +46,11 @@ export function useScroll() {
       lenisInstance?.raf(time * 1000)
     })
     gsap.ticker.lagSmoothing(0)
+
+    // Refresh ScrollTrigger after Lenis is set up so pin spacers calculate correctly
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh()
+    })
   }
 
   /**

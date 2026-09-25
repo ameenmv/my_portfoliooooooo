@@ -26,7 +26,7 @@ onMounted(() => {
       // Theme switching per section
       const sectionThemes: Array<{ id: string; theme: 'cream' | 'dark' }> = [
         { id: 'hero', theme: 'cream' },
-        { id: 'manifesto', theme: 'dark' },
+        { id: 'manifesto', theme: 'cream' },
         { id: 'parcours', theme: 'cream' },
         { id: 'toolkit', theme: 'dark' },
         { id: 'projects', theme: 'dark' },
