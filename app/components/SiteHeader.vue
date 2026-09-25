@@ -79,10 +79,30 @@ function toggleLocale() {
     >
       <MagneticButton :strength="8">
         <NuxtLink
+          to="/#parcours"
+          class="font-body text-[clamp(14px,1vw,17px)] font-medium leading-none text-inherit no-underline relative group"
+        >
+          journey
+          <span class="absolute bottom-[-0.25em] inset-x-0 h-[1px] bg-current scale-x-0 origin-left transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
+        </NuxtLink>
+      </MagneticButton>
+
+      <MagneticButton :strength="8">
+        <NuxtLink
+          to="/#toolkit"
+          class="font-body text-[clamp(14px,1vw,17px)] font-medium leading-none text-inherit no-underline relative group"
+        >
+          toolkit
+          <span class="absolute bottom-[-0.25em] inset-x-0 h-[1px] bg-current scale-x-0 origin-left transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
+        </NuxtLink>
+      </MagneticButton>
+
+      <MagneticButton :strength="8">
+        <NuxtLink
           to="/#projects"
           class="font-body text-[clamp(14px,1vw,17px)] font-medium leading-none text-inherit no-underline relative group"
         >
-          {{ t('nav.projects') }}
+          {{ t('nav.projects').toLowerCase() }}
           <span class="absolute bottom-[-0.25em] inset-x-0 h-[1px] bg-current scale-x-0 origin-left transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
         </NuxtLink>
       </MagneticButton>
@@ -92,7 +112,7 @@ function toggleLocale() {
           to="/playground"
           class="font-body text-[clamp(14px,1vw,17px)] font-medium leading-none text-inherit no-underline relative group"
         >
-          {{ t('nav.playground') }}
+          {{ t('nav.playground').toLowerCase() }}
           <span class="absolute bottom-[-0.25em] inset-x-0 h-[1px] bg-current scale-x-0 origin-left transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
         </NuxtLink>
       </MagneticButton>
@@ -102,9 +122,9 @@ function toggleLocale() {
           to="/contact"
           class="font-body text-[clamp(14px,1vw,17px)] font-medium leading-none text-inherit no-underline relative group"
         >
-          {{ t('nav.contact') }}
-        <span class="absolute bottom-[-0.25em] inset-x-0 h-[1px] bg-current scale-x-0 origin-left transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
-      </NuxtLink>
+          {{ t('nav.contact').toLowerCase() }}
+          <span class="absolute bottom-[-0.25em] inset-x-0 h-[1px] bg-current scale-x-0 origin-left transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
+        </NuxtLink>
       </MagneticButton>
 
       <!-- Separator -->
