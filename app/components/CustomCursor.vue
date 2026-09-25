@@ -31,15 +31,15 @@ function onMove(e: MouseEvent) {
 }
 
 function onEnter(e: Event) {
-  const el = e.target as HTMLElement
-  if (el.matches('a, button, [role="button"], .cursor-grow')) {
+  const el = e.target
+  if (el instanceof Element && el.matches('a, button, [role="button"], .cursor-grow')) {
     isHovering.value = true
   }
 }
 
 function onLeave(e: Event) {
-  const el = e.target as HTMLElement
-  if (el.matches('a, button, [role="button"], .cursor-grow')) {
+  const el = e.target
+  if (el instanceof Element && el.matches('a, button, [role="button"], .cursor-grow')) {
     isHovering.value = false
   }
 }
