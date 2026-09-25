@@ -32,15 +32,17 @@
     @apply bg-accent-orange text-cream;
   }
 
-  /* Interface color switching via data attributes */
+  /* Interface color switching — exact source values */
+  /* Source: body[data-interface-color=cream] { --header-capsule-color: #646464; background-color: var(--color-cream) } */
   body[data-interface-color="cream"] {
     --current-interface-color: theme('colors.cream');
-    --header-capsule-color: theme('colors.cream');
+    --header-capsule-color: #646464;
+    background-color: theme('colors.cream');
   }
 
   body[data-interface-color="dark"] {
     --current-interface-color: theme('colors.dark');
-    --header-capsule-color: theme('colors.dark');
+    --header-capsule-color: #fff;
   }
 
   /* Arabic: no tight tracking */
