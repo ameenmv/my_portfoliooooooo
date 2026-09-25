@@ -35,12 +35,12 @@
   /* Interface color switching via data attributes */
   body[data-interface-color="cream"] {
     --current-interface-color: theme('colors.cream');
-    --header-capsule-color: #646464;
+    --header-capsule-color: theme('colors.cream');
   }
 
   body[data-interface-color="dark"] {
     --current-interface-color: theme('colors.dark');
-    --header-capsule-color: #fff;
+    --header-capsule-color: theme('colors.dark');
   }
 
   /* Arabic: no tight tracking */

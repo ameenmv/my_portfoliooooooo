@@ -248,9 +248,11 @@ function animate(orbGroup: THREE.Group, rings: THREE.Mesh[]) {
   <section
     id="hero"
     ref="sectionRef"
-    class="relative w-full h-[120vh] overflow-hidden bg-dark"
+    class="relative w-full h-[200vh] overflow-visible bg-dark"
     data-theme="cream"
   >
+    <!-- Sticky viewport container -->
+    <div class="sticky top-0 h-screen overflow-hidden">
     <!-- 3D Canvas with animated inset frame -->
     <div
       ref="frameRef"
@@ -266,7 +268,7 @@ function animate(orbGroup: THREE.Group, rings: THREE.Mesh[]) {
     <!-- Identity overlay: name at bottom-right (like guillaumezhu.com) -->
     <div
       ref="nameRef"
-      class="relative z-[2] h-full pointer-events-none will-change-transform"
+      class="absolute inset-0 z-[2] pointer-events-none will-change-transform"
     >
       <div class="absolute bottom-[clamp(32px,4vw,64px)] end-[clamp(32px,4vw,64px)] text-cream text-end">
         <h2 class="font-display text-[clamp(32px,4vw,72px)] font-semibold leading-[0.88] tracking-tight">
@@ -284,5 +286,7 @@ function animate(orbGroup: THREE.Group, rings: THREE.Mesh[]) {
         <div class="w-[1px] h-8 bg-cream/50 animate-pulse" />
       </div>
     </div>
+    </div>
   </section>
 </template>
+

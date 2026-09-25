@@ -1,11 +1,7 @@
 <script setup lang="ts">
 /**
  * PageTransition — Animated cross-page transition.
- * Exact replica of guillaumezhu.com:
- * - Curved div slides in from right
- * - 140vw × 120vh with left-edge border-radius
- * - Coordinated via sessionStorage between pages
- * - GSAP drives the slide in/out animation
+ * Only activates on actual route changes, stays completely hidden otherwise.
  */
 import { gsap } from 'gsap'
 
@@ -13,71 +9,60 @@ const overlayRef = ref<HTMLElement>()
 const isActive = ref(false)
 const variant = ref<'cream' | 'dark'>('cream')
 
-const router = useRouter()
+if (import.meta.client) {
+  const router = useRouter()
 
-// Listen for route changes — animate OUT current page, then IN new page
-router.beforeEach((_to, _from, next) => {
-  if (!overlayRef.value || !import.meta.client) {
-    next()
-    return
-  }
-
-  const destTheme = sessionStorage.getItem('pageTransitionColor') || 'cream'
-  variant.value = destTheme as 'cream' | 'dark'
-  isActive.value = true
-
-  // Slide overlay in from right
-  gsap.fromTo(overlayRef.value, {
-    xPercent: 100,
-  }, {
-    xPercent: 0,
-    duration: 0.8,
-    ease: 'power3.inOut',
-    onComplete: () => {
+  router.beforeEach((_to, _from, next) => {
+    if (!overlayRef.value) {
       next()
-      // After navigation, slide overlay out to left
-      nextTick(() => {
-        window.scrollTo(0, 0)
-        gsap.to(overlayRef.value!, {
-          xPercent: -100,
-          duration: 0.7,
-          ease: 'power3.inOut',
-          delay: 0.15,
-          onComplete: () => {
-            isActive.value = false
-            gsap.set(overlayRef.value!, { xPercent: 100 })
-          },
+      return
+    }
+
+    const destTheme = sessionStorage.getItem('pageTransitionColor') || 'cream'
+    variant.value = destTheme as 'cream' | 'dark'
+    isActive.value = true
+
+    gsap.fromTo(overlayRef.value, {
+      xPercent: 100,
+    }, {
+      xPercent: 0,
+      duration: 0.8,
+      ease: 'power3.inOut',
+      onComplete: () => {
+        next()
+        nextTick(() => {
+          window.scrollTo(0, 0)
+          gsap.to(overlayRef.value!, {
+            xPercent: -100,
+            duration: 0.7,
+            ease: 'power3.inOut',
+            delay: 0.15,
+            onComplete: () => {
+              isActive.value = false
+              gsap.set(overlayRef.value!, { xPercent: 100 })
+            },
+          })
         })
-      })
-    },
+      },
+    })
+
+    return false
   })
-
-  return false // Prevent default navigation until animation completes
-})
-
-function setTransitionColor(color: 'cream' | 'dark') {
-  sessionStorage.setItem('pageTransitionColor', color)
 }
-
-defineExpose({ setTransitionColor })
 </script>
 
 <template>
+  <!-- Hidden by default: translate-x-[200%] ensures it's fully off-screen -->
   <div
+    v-if="isActive"
     ref="overlayRef"
-    class="fixed inset-0 z-[9999] pointer-events-none will-change-transform"
-    :class="isActive ? 'pointer-events-auto' : ''"
-    style="transform: translateX(100%);"
+    class="fixed inset-0 z-[9999] pointer-events-auto will-change-transform"
     aria-hidden="true"
   >
     <div
-      class="absolute w-[140vw] h-[120vh] -top-[10vh]"
+      class="absolute h-[120vh] -top-[10vh] right-0"
       :class="variant === 'dark' ? 'bg-dark' : 'bg-cream'"
-      :style="{
-        borderTopLeftRadius: 'min(60vh, 42vw) 60vh',
-        borderBottomLeftRadius: 'min(60vh, 42vw) 60vh',
-        insetInlineEnd: '-20vw',
-      }"
+      style="width: 140vw; border-top-left-radius: min(60vh, 42vw) 60vh; border-bottom-left-radius: min(60vh, 42vw) 60vh;"
     />
   </div>
 </template>

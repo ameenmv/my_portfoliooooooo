@@ -7,16 +7,16 @@
   --color-accent-gold: #f6c177;
   --color-accent-purple: #9b7cff;
 
-  /* Interface color — switches per section via ScrollTrigger */
+  /* Interface color — switches per section */
   --current-interface-color: var(--color-cream);
-  --header-capsule-color: #646464;
+  --header-capsule-color: var(--color-cream);
 
   /* Layout */
   --border-radius-block: 40px;
   --border-radius-card: 15px;
   --padding-min: 1rem;
 
-  /* Typography — Latin + Arabic companion fallback chain */
+  /* Typography */
   --letter-spacing-display: -0.025em;
   --font-display: 'CabinetGrotesk', 'Alexandria', Arial, Helvetica, sans-serif;
   --font-body: 'Satoshi', 'IBMPlexSansArabic', Arial, Helvetica, sans-serif;
@@ -30,7 +30,18 @@
   --scroll-indicator-active: 48px;
 }
 
-/* Arabic-specific: tighten letter-spacing for Arabic text */
+/* Theme switching via data attribute on body */
+body[data-interface-color="cream"] {
+  --current-interface-color: var(--color-cream);
+  --header-capsule-color: var(--color-cream);
+}
+
+body[data-interface-color="dark"] {
+  --current-interface-color: var(--color-dark);
+  --header-capsule-color: var(--color-dark);
+}
+
+/* Arabic: tighten letter-spacing */
 html[dir="rtl"] {
   --letter-spacing-display: 0em;
 }
